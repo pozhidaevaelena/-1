@@ -51,11 +51,11 @@ export default function App() {
         if (img) {
           setHeroImage(img);
         } else {
-          setHeroImage("https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=1000");
+          setHeroImage("https://picsum.photos/seed/ai-workspace/1000/1000");
         }
       } catch (error) {
         console.error("Failed to generate image:", error);
-        setHeroImage("https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=1000");
+        setHeroImage("https://picsum.photos/seed/ai-workspace/1000/1000");
       } finally {
         setLoadingImage(false);
       }
@@ -167,6 +167,7 @@ export default function App() {
                   src={heroImage}
                   alt="AI Creativity"
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">

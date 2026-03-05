@@ -4,7 +4,7 @@ export async function generateHeroImage() {
   const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
-    console.error("Gemini API Key is missing or not configured.");
+    console.error("Gemini API Key is missing or not configured. Please set GEMINI_API_KEY in your environment variables.");
     return null;
   }
 
