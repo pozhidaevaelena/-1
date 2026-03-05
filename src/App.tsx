@@ -53,8 +53,13 @@ export default function App() {
         const response = await fetch(localPhoto, { method: 'HEAD' });
         
         if (response.ok) {
-          // Добавляем временную метку, чтобы браузер не брал старое фото из кэша
-          setHeroImage(`${localPhoto}?t=${Date.now()}`);
+          // Проверяем размер файла через заголовок Content-Length
+          const contentLength = response.headers.get('Content-Length');
+          if (contentLength && parseInt(contentLength) > 0) {
+            setHeroImage(`${localPhoto}?t=${Date.now()}`);
+          } else {
+            throw new Error("Empty image file");
+          }
         } else {
           // Пытаемся сгенерировать изображение
           const img = await generateHeroImage();
@@ -157,6 +162,7 @@ export default function App() {
                   alt="AI Content Creator"
                   className="w-full h-full object-cover transition-all duration-700"
                   referrerPolicy="no-referrer"
+                  onError={() => setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000")}
                 />
               ) : (
                 <div className="absolute inset-0 bg-white flex items-center justify-center">
