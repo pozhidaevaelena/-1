@@ -22,13 +22,13 @@ const GlassCard = ({ title, icon: Icon, children, delay = 0 }: { title: string; 
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.6, delay }}
-    className="glass-card p-8 group bg-white/5 backdrop-blur-xl border-white/10 shadow-2xl"
+    className="glass-card p-8 group bg-white shadow-sm"
   >
-    <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-      <Icon className="text-blue-400 w-6 h-6" />
+    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <Icon className="text-blue-600 w-6 h-6" />
     </div>
-    <h3 className="text-2xl font-semibold mb-4 text-white">{title}</h3>
-    <p className="text-white/60 leading-relaxed text-lg">{children}</p>
+    <h3 className="text-2xl font-semibold mb-4 text-[#262626]">{title}</h3>
+    <p className="text-[#262626]/70 leading-relaxed text-lg">{children}</p>
   </motion.div>
 );
 
@@ -46,16 +46,28 @@ export default function App() {
 
   useEffect(() => {
     async function loadImage() {
+      setLoadingImage(true);
       try {
-        const img = await generateHeroImage();
-        if (img) {
-          setHeroImage(img);
+        // Проверяем наличие локального фото
+        const localPhoto = "/hero.jpg";
+        const response = await fetch(localPhoto, { method: 'HEAD' });
+        
+        if (response.ok) {
+          // Добавляем временную метку, чтобы браузер не брал старое фото из кэша
+          setHeroImage(`${localPhoto}?t=${Date.now()}`);
         } else {
-          setHeroImage("https://picsum.photos/seed/ai-workspace/1000/1000");
+          // Пытаемся сгенерировать изображение
+          const img = await generateHeroImage();
+          if (img) {
+            setHeroImage(img);
+          } else {
+            // Если ИИ не сработал, используем качественную заглушку
+            setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
+          }
         }
       } catch (error) {
-        console.error("Failed to generate image:", error);
-        setHeroImage("https://picsum.photos/seed/ai-workspace/1000/1000");
+        console.error("Failed to load image:", error);
+        setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
       } finally {
         setLoadingImage(false);
       }
@@ -91,62 +103,39 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-white selection:bg-blue-500/30 relative overflow-hidden">
+    <div className="min-h-screen bg-orange-50/30 text-[#262626] selection:bg-amber-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="fixed inset-0 bg-mesh pointer-events-none opacity-100" />
-      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/20 blur-[150px] rounded-full pointer-events-none animate-pulse" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-100/30 blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-100/30 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center backdrop-blur-xl bg-white/5 border border-white/10 px-6 py-3 rounded-full shadow-2xl">
-          <div className="text-xl font-display font-bold text-white tracking-tighter flex items-center gap-2">
-            <Sparkles className="text-blue-400 w-5 h-5" />
+        <div className="max-w-7xl mx-auto flex justify-between items-center backdrop-blur-md bg-white/80 border border-black/5 px-6 py-3 rounded-full shadow-sm">
+          <div className="text-xl font-display font-bold text-[#262626] tracking-tighter flex items-center gap-2">
+            <Sparkles className="text-amber-600 w-5 h-5" />
             AI CONTENT PRO
           </div>
-          <div className="hidden md:flex gap-8 text-sm font-medium text-white/60">
-            <a href="#advantages" className="hover:text-white transition-colors">Преимущества</a>
-            <a href="#portfolio" className="hover:text-white transition-colors">Портфолио</a>
-            <a href="#pricing" className="hover:text-white transition-colors">Цены</a>
+          <div className="hidden md:flex gap-8 text-sm font-medium text-[#262626]/70">
+            <a href="#advantages" className="hover:text-amber-600 transition-colors">Преимущества</a>
+            <a href="#portfolio" className="hover:text-amber-600 transition-colors">Портфолио</a>
+            <a href="#pricing" className="hover:text-amber-600 transition-colors">Цены</a>
           </div>
-          <a href={TELEGRAM_LINK} className="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">
+          <a href={TELEGRAM_LINK} className="text-sm font-semibold bg-[#262626] text-white px-5 py-2 rounded-full hover:bg-amber-600 transition-all">
             Связаться
           </a>
         </div>
       </nav>
 
       {/* Block 1: Hero */}
-      <Section className="pt-40 md:pt-56 grid lg:grid-cols-2 gap-16 items-center">
+      <Section className="pt-24 md:pt-32 flex flex-col items-center text-center">
         <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative w-full max-w-5xl mx-auto mb-16 md:mb-24"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-blue-400 mb-8">
-            <Zap className="w-4 h-4 fill-current" />
-            Будущее копирайтинга уже здесь
-          </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-8 text-gradient">
-            Контент, который <span className="text-blue-400">продает</span>.
-          </h1>
-          <p className="text-xl md:text-2xl text-white/60 mb-10 leading-relaxed max-w-xl">
-            Созданный нейросетью, доведённый до совершенства человеком. Скорость света, креативность машины и 100% контроль качества.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <a href={TELEGRAM_LINK} className="btn-premium text-lg flex items-center justify-center gap-2 text-center">
-              Заказать консультацию <ArrowRight className="w-5 h-5" />
-            </a>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          className="relative group"
-        >
-          <div className="absolute inset-0 bg-white/10 blur-[100px] rounded-full group-hover:bg-white/15 transition-colors duration-700" />
-          <div className="relative aspect-square rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/5 shadow-2xl">
+          <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border border-black/5 bg-white shadow-2xl group">
             <AnimatePresence mode="wait">
               {loadingImage ? (
                 <motion.div 
@@ -154,10 +143,10 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-900/50 backdrop-blur-xl"
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/50"
                 >
-                  <div className="w-12 h-12 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin" />
-                  <p className="text-sm font-medium text-white/40">Генерация шедевра...</p>
+                  <div className="w-12 h-12 border-4 border-amber-100 border-t-amber-600 rounded-full animate-spin" />
+                  <p className="text-sm font-medium text-[#262626]/40">Загрузка...</p>
                 </motion.div>
               ) : heroImage ? (
                 <motion.img 
@@ -165,39 +154,57 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   src={heroImage}
-                  alt="AI Creativity"
-                  className="w-full h-full object-cover"
+                  alt="AI Content Creator"
+                  className="w-full h-full object-cover transition-all duration-700"
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
-                  <p className="text-white/40">Image failed to load</p>
+                <div className="absolute inset-0 bg-white flex items-center justify-center">
+                  <p className="text-[#262626]/40">Фото не найдено</p>
                 </div>
               )}
             </AnimatePresence>
           </div>
-          {/* Floating badge */}
+
+          {/* Neon Badge positioned at the bottom center of the image */}
           <motion.div 
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-6 -left-6 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-20 w-max"
           >
-            <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="text-blue-400 w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs text-white/40 uppercase tracking-wider font-bold">Статус</p>
-              <p className="text-sm font-semibold text-white">100% Качество</p>
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 text-white font-bold text-sm md:text-base shadow-[0_0_20px_rgba(245,158,11,0.6)] border-2 border-amber-400 animate-pulse">
+              <Zap className="w-4 h-4 md:w-5 md:h-5 fill-current" />
+              Будущее копирайтинга уже здесь
             </div>
           </motion.div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="max-w-4xl mx-auto"
+        >
+          <h1 className="text-5xl md:text-8xl font-extrabold leading-[1.1] mb-6 md:mb-8 text-gradient">
+            Контент<br /> <span className="whitespace-nowrap">который <span className="text-amber-600">продает</span></span>
+          </h1>
+          <p className="text-xl md:text-3xl text-[#262626]/70 mb-8 md:mb-10 leading-relaxed max-w-2xl mx-auto">
+            Созданный нейросетью, доведённый до совершенства человеком. Скорость света, креативность машины и 100% контроль качества.
+          </p>
+          <div className="flex justify-center">
+            <a href={TELEGRAM_LINK} className="btn-premium text-xl px-12 py-6 flex items-center justify-center gap-2 text-center">
+              Заказать консультацию <ArrowRight className="w-6 h-6" />
+            </a>
+          </div>
         </motion.div>
       </Section>
 
       {/* Block 2: Advantages */}
       <Section id="advantages">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white">Почему я?</h2>
-          <p className="text-xl text-white/60 max-w-2xl mx-auto">Сочетание технологий и опыта дает результат, недоступный обычным копирайтерам.</p>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-[#262626]">Почему я?</h2>
+          <p className="text-xl text-[#262626]/60 max-w-2xl mx-auto">Сочетание технологий и опыта дает результат, недоступный обычным копирайтерам.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           <GlassCard title="Скорость" icon={Zap} delay={0.1}>
@@ -213,10 +220,10 @@ export default function App() {
       </Section>
 
       {/* Block 3: Portfolio */}
-      <Section id="portfolio" className="bg-white/5 border-y border-white/10 backdrop-blur-sm">
+      <Section id="portfolio" className="bg-amber-50/30 border-y border-black/5">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white">Портфолио</h2>
-          <p className="text-xl text-white/60">Тексты, которые уже приносят результат клиентам.</p>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-[#262626]">Портфолио</h2>
+          <p className="text-xl text-[#262626]/60">Тексты, которые уже приносят результат клиентам.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
           {portfolioItems.map((item, i) => (
@@ -226,12 +233,12 @@ export default function App() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               onClick={() => setSelectedItem(item)}
-              className="glass-card p-10 group cursor-pointer bg-white/5 backdrop-blur-xl border-white/10"
+              className="glass-card p-10 group cursor-pointer bg-white"
             >
-              <span className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4 block">{item.tag}</span>
-              <h3 className="text-3xl font-bold mb-6 group-hover:text-blue-400 transition-colors text-white">{item.title}</h3>
-              <p className="text-xl text-white/60 leading-relaxed italic font-light">"{item.text}"</p>
-              <div className="mt-8 flex items-center gap-2 text-blue-400 font-semibold text-sm">
+              <span className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-4 block">{item.tag}</span>
+              <h3 className="text-3xl font-bold mb-6 group-hover:text-amber-600 transition-colors text-[#262626]">{item.title}</h3>
+              <p className="text-xl text-[#262626]/60 leading-relaxed italic font-light">"{item.text}"</p>
+              <div className="mt-8 flex items-center gap-2 text-amber-600 font-semibold text-sm">
                 Читать полностью <ArrowRight className="w-4 h-4" />
               </div>
             </motion.div>
@@ -241,20 +248,20 @@ export default function App() {
 
       {/* Block 4: Process */}
       <Section>
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-24 text-white">Как это работает</h2>
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-24 text-[#262626]">Как это работает</h2>
         <div className="grid md:grid-cols-3 gap-16 relative">
-          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent hidden md:block" />
+          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/5 to-transparent hidden md:block" />
           {[
             { icon: MessageSquare, title: "1. Заявка", text: "Вы отвечаете на 4 вопроса бота. Это занимает всего 2 минуты." },
             { icon: Cpu, title: "2. Генерация", text: "Нейросеть пишет черновик, а я вдыхаю в него жизнь и стиль." },
             { icon: Send, title: "3. Готово", text: "Текст приходит вам в Telegram. Публикуйте и получайте охваты." }
           ].map((step, i) => (
             <div key={i} className="relative text-center group">
-              <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-white/10 group-hover:scale-110 group-hover:border-blue-500/50 transition-all duration-500 shadow-2xl backdrop-blur-xl">
-                <step.icon className="w-10 h-10 text-blue-400" />
+              <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto mb-8 border border-black/5 group-hover:scale-110 group-hover:border-amber-600/20 transition-all duration-500 shadow-lg">
+                <step.icon className="w-10 h-10 text-amber-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">{step.title}</h3>
-              <p className="text-white/60 text-lg">{step.text}</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#262626]">{step.title}</h3>
+              <p className="text-[#262626]/70 text-lg">{step.text}</p>
             </div>
           ))}
         </div>
@@ -262,25 +269,25 @@ export default function App() {
 
       {/* Block 5: Pricing */}
       <Section id="pricing">
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-20 text-white">Тарифы</h2>
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-20 text-[#262626]">Тарифы</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {[
             { name: "Экспресс", price: "500", desc: "Один пост для соцсетей (до 1500 знаков).", time: "3 часа" },
             { name: "Блогер", price: "1500", desc: "3 поста на неделю + 1 идея для Reels.", time: "1 день", popular: true },
             { name: "Контент-план", price: "5000", desc: "10 постов + 3 сценария + 2 рассылки.", time: "3 дня" }
           ].map((plan, i) => (
-            <div key={i} className={`glass-card p-10 flex flex-col bg-white/5 backdrop-blur-xl border-white/10 ${plan.popular ? 'border-blue-500/50 shadow-[0_0_50px_rgba(37,99,235,0.2)]' : ''}`}>
-              {plan.popular && <span className="bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-6 self-start">Популярный</span>}
-              <h3 className="text-2xl font-bold mb-2 text-white">{plan.name}</h3>
+            <div key={i} className={`glass-card p-10 flex flex-col bg-white ${plan.popular ? 'border-amber-600/20 shadow-xl' : ''}`}>
+              {plan.popular && <span className="bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-6 self-start">Популярный</span>}
+              <h3 className="text-2xl font-bold mb-2 text-[#262626]">{plan.name}</h3>
               <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-4xl font-bold text-white">{plan.price}</span>
-                <span className="text-white/50 font-medium">руб.</span>
+                <span className="text-4xl font-bold text-[#262626]">{plan.price}</span>
+                <span className="text-[#262626]/50 font-medium">руб.</span>
               </div>
-              <p className="text-white/60 mb-8 flex-grow text-lg leading-relaxed">{plan.desc}</p>
-              <div className="flex items-center gap-2 text-sm text-white/40 mb-10">
-                <Zap className="w-4 h-4 text-blue-400" /> Срок: {plan.time}
+              <p className="text-[#262626]/70 mb-8 flex-grow text-lg leading-relaxed">{plan.desc}</p>
+              <div className="flex items-center gap-2 text-sm text-[#262626]/40 mb-10">
+                <Zap className="w-4 h-4 text-amber-600" /> Срок: {plan.time}
               </div>
-              <a href={TELEGRAM_LINK} className={`w-full py-4 rounded-2xl font-bold transition-all text-center ${plan.popular ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 hover:scale-[1.02]' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+              <a href={TELEGRAM_LINK} className={`w-full py-4 rounded-2xl font-bold transition-all text-center ${plan.popular ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20 hover:scale-[1.02]' : 'bg-slate-100 text-[#262626] hover:bg-slate-200'}`}>
                 Заказать
               </a>
             </div>
@@ -289,13 +296,13 @@ export default function App() {
       </Section>
 
       {/* Block 6: Footer */}
-      <footer className="relative z-10 border-t border-white/10 pt-32 pb-16 px-6 bg-slate-950/50 backdrop-blur-xl">
+      <footer className="relative z-10 border-t border-black/5 pt-32 pb-16 px-6 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-7xl font-bold mb-12 text-gradient leading-tight">Готовы к новому уровню контента?</h2>
           <a href={TELEGRAM_LINK} className="btn-premium text-xl px-16 py-6 inline-flex items-center gap-3">
             <MessageCircle className="w-6 h-6" /> Написать в Telegram
           </a>
-          <div className="mt-32 pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-white/40 font-medium">
+          <div className="mt-32 pt-12 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-[#262626]/40 font-medium">
             <p>© 2026 AI CONTENT PRO. Все права защищены.</p>
             <p>Сделано с помощью ИИ и человеческого интеллекта.</p>
           </div>
@@ -316,19 +323,19 @@ export default function App() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-slate-900 w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden border border-white/10"
+              className="bg-white w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden border border-black/5"
               onClick={(e) => e.stopPropagation()}
             >
               <button 
                 onClick={() => setSelectedItem(null)}
-                className="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
+                className="absolute top-6 right-6 w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center hover:bg-amber-600 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
-              <span className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4 block">{selectedItem.tag}</span>
-              <h3 className="text-3xl font-bold mb-8 text-white">{selectedItem.title}</h3>
-              <div className="bg-white/5 p-8 rounded-3xl border border-white/10">
-                <p className="text-xl text-white/80 leading-relaxed italic font-light whitespace-pre-line">
+              <span className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-4 block">{selectedItem.tag}</span>
+              <h3 className="text-3xl font-bold mb-8 text-[#262626]">{selectedItem.title}</h3>
+              <div className="bg-amber-50/50 p-8 rounded-3xl border border-black/5">
+                <p className="text-xl text-[#262626]/80 leading-relaxed italic font-light whitespace-pre-line">
                   "{selectedItem.fullText}"
                 </p>
               </div>

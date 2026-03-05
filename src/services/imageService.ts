@@ -15,13 +15,13 @@ export async function generateHeroImage() {
       contents: {
         parts: [
           {
-            text: 'A high-quality, realistic photo of a professional minimalist workspace. A laptop is open on a sleek desk, showing a marketing text being edited. A human hand is holding a premium pen, making notes. Subtle, elegant glowing blue digital particles and neural network lines emerge from the laptop screen, symbolizing AI assistance. Soft natural light, cinematic composition, professional photography, 4k.',
+            text: 'A beautiful, warm illustration of a young woman with long brown hair, wearing a white V-neck shirt, sitting at a wooden table in a cozy room. She is typing on a laptop, and magical glowing golden letters and symbols are gracefully floating out of the screen into the air. Warm sunlight streams through a window with a grid pattern in the background. A small green plant in a terracotta pot is on the desk. Soft, cinematic lighting, 3D render style, high detail, cozy atmosphere.',
           },
         ],
       },
       config: {
         imageConfig: {
-          aspectRatio: "1:1"
+          aspectRatio: "3:4"
         }
       }
     });

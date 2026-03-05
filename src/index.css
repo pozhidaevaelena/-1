@@ -4,14 +4,28 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", sans-serif;
+  --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1) translateX(-50%);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.05) translateX(-47.5%);
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.8);
+    }
+  }
 }
 
 @layer base {
   body {
-    @apply font-sans bg-[#0F172A] text-white selection:bg-blue-500/30;
+    @apply font-sans bg-orange-50/30 text-[#262626] selection:bg-amber-100;
   }
   h1, h2, h3 {
-    @apply font-display text-white tracking-tight;
+    @apply font-display text-[#262626] tracking-tight;
   }
 }
 
@@ -20,16 +34,16 @@
 }
 
 .btn-premium {
-  @apply relative overflow-hidden bg-blue-600 text-white px-10 py-5 rounded-full font-bold transition-all duration-300 hover:bg-blue-500 hover:shadow-[0_10px_30px_rgba(37,99,235,0.3)] active:scale-95;
+  @apply relative overflow-hidden bg-amber-600 text-white px-10 py-5 rounded-full font-bold transition-all duration-300 hover:bg-amber-700 hover:shadow-[0_10px_30px_rgba(217,119,6,0.3)] active:scale-95;
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-blue-100 to-blue-200;
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-amber-900 via-amber-700 to-amber-600;
 }
 
 .bg-mesh {
   background-image: 
-    radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.3) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.2) 0px, transparent 50%),
-    radial-gradient(at 50% 50%, rgba(30, 58, 138, 0.4) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(217, 119, 6, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(251, 191, 36, 0.05) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(217, 119, 6, 0.05) 0px, transparent 50%);
 }
