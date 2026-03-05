@@ -48,28 +48,11 @@ export default function App() {
     async function loadImage() {
       setLoadingImage(true);
       try {
-        // Проверяем наличие локального фото
+        // Теперь фото находится в папке public, поэтому оно доступно по пути /hero.jpg
         const localPhoto = "/hero.jpg";
-        const response = await fetch(localPhoto, { method: 'HEAD' });
-        
-        if (response.ok) {
-          // Проверяем размер файла через заголовок Content-Length
-          const contentLength = response.headers.get('Content-Length');
-          if (contentLength && parseInt(contentLength) > 0) {
-            setHeroImage(`${localPhoto}?t=${Date.now()}`);
-          } else {
-            throw new Error("Empty image file");
-          }
-        } else {
-          // Пытаемся сгенерировать изображение
-          const img = await generateHeroImage();
-          if (img) {
-            setHeroImage(img);
-          } else {
-            // Если ИИ не сработал, используем качественную заглушку
-            setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
-          }
-        }
+        // Просто пробуем установить путь с меткой времени для сброса кэша
+        // Если картинка не загрузится, сработает onError в самом теге img
+        setHeroImage(`${localPhoto}?t=${Date.now()}`);
       } catch (error) {
         console.error("Failed to load image:", error);
         setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
