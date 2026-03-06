@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { generateHeroImage } from "./services/imageService";
 import { Sparkles, Zap, Target, Layers, ArrowRight, MessageCircle, CheckCircle2, MessageSquare, Cpu, Send, X } from "lucide-react";
+import heroPhoto from "./hero.jpg";
 
 const TELEGRAM_LINK = "#";
 
@@ -41,25 +42,11 @@ interface PortfolioItem {
 
 export default function App() {
   const [heroImage, setHeroImage] = useState<string | null>(null);
-  const [loadingImage, setLoadingImage] = useState(true);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
   useEffect(() => {
-    async function loadImage() {
-      setLoadingImage(true);
-      try {
-        // Используем относительный путь, который корректно работает в Vite для файлов из папки public
-        const localPhoto = "hero.jpg";
-        setHeroImage(`${localPhoto}?t=${Date.now()}`);
-      } catch (error) {
-        console.error("Failed to load image:", error);
-        setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
-      } finally {
-        // Небольшая задержка, чтобы состояние успело обновиться
-        setTimeout(() => setLoadingImage(false), 100);
-      }
-    }
-    loadImage();
+    // Используем прямой импорт для максимальной надежности в Vite
+    setHeroImage(heroPhoto);
   }, []);
 
   const portfolioItems: PortfolioItem[] = [
@@ -132,15 +119,17 @@ export default function App() {
                 alt="AI Content Creator"
                 className="w-full h-full object-cover transition-all duration-700"
                 referrerPolicy="no-referrer"
-                onError={() => setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000")}
+                onError={(e) => {
+                  console.error("Image load error, switching to fallback");
+                  // Если локальное фото не загрузилось, пробуем Unsplash
+                  // Используем проверку на то, что это не уже Unsplash ссылка
+                  if (!heroImage.includes("unsplash.com")) {
+                    setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
+                  }
+                }}
               />
             )}
-            {!heroImage && !loadingImage && (
-              <div className="absolute inset-0 bg-white flex items-center justify-center">
-                <p className="text-[#262626]/40">Фото не найдено</p>
-              </div>
-            )}
-            {loadingImage && (
+            {!heroImage && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/50">
                 <div className="w-12 h-12 border-4 border-amber-100 border-t-amber-600 rounded-full animate-spin" />
               </div>
