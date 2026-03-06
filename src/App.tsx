@@ -48,16 +48,15 @@ export default function App() {
     async function loadImage() {
       setLoadingImage(true);
       try {
-        // Теперь фото находится в папке public, поэтому оно доступно по пути /hero.jpg
-        const localPhoto = "/hero.jpg";
-        // Просто пробуем установить путь с меткой времени для сброса кэша
-        // Если картинка не загрузится, сработает onError в самом теге img
+        // Используем относительный путь, который корректно работает в Vite для файлов из папки public
+        const localPhoto = "hero.jpg";
         setHeroImage(`${localPhoto}?t=${Date.now()}`);
       } catch (error) {
         console.error("Failed to load image:", error);
         setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000");
       } finally {
-        setLoadingImage(false);
+        // Небольшая задержка, чтобы состояние успело обновиться
+        setTimeout(() => setLoadingImage(false), 100);
       }
     }
     loadImage();
@@ -124,35 +123,28 @@ export default function App() {
           className="relative w-full max-w-5xl mx-auto mb-16 md:mb-24"
         >
           <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border border-black/5 bg-white shadow-2xl group">
-            <AnimatePresence mode="wait">
-              {loadingImage ? (
-                <motion.div 
-                  key="loader"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/50"
-                >
-                  <div className="w-12 h-12 border-4 border-amber-100 border-t-amber-600 rounded-full animate-spin" />
-                  <p className="text-sm font-medium text-[#262626]/40">Загрузка...</p>
-                </motion.div>
-              ) : heroImage ? (
-                <motion.img 
-                  key="image"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  src={heroImage}
-                  alt="AI Content Creator"
-                  className="w-full h-full object-cover transition-all duration-700"
-                  referrerPolicy="no-referrer"
-                  onError={() => setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000")}
-                />
-              ) : (
-                <div className="absolute inset-0 bg-white flex items-center justify-center">
-                  <p className="text-[#262626]/40">Фото не найдено</p>
-                </div>
-              )}
-            </AnimatePresence>
+            {heroImage && (
+              <motion.img 
+                key={heroImage}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                src={heroImage}
+                alt="AI Content Creator"
+                className="w-full h-full object-cover transition-all duration-700"
+                referrerPolicy="no-referrer"
+                onError={() => setHeroImage("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800&h=1000")}
+              />
+            )}
+            {!heroImage && !loadingImage && (
+              <div className="absolute inset-0 bg-white flex items-center justify-center">
+                <p className="text-[#262626]/40">Фото не найдено</p>
+              </div>
+            )}
+            {loadingImage && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/50">
+                <div className="w-12 h-12 border-4 border-amber-100 border-t-amber-600 rounded-full animate-spin" />
+              </div>
+            )}
           </div>
 
           {/* Neon Badge positioned at the bottom center of the image */}
